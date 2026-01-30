@@ -40,13 +40,17 @@
         document.head.appendChild(link);
     </script>
 
-    <!-- iOS 專屬標籤與圖示修正 -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="表格查閱">
+    <!-- 電腦瀏覽器書籤與 iOS 圖示配置 -->
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Leonleedig/TABLEreader/main/icon.png">
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/Leonleedig/TABLEreader/main/icon.png">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Leonleedig/TABLEreader/main/icon.png">
     
-    <title>表格查閱</title>
+    <!-- iOS 專屬標籤 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="閱表器">
+    
+    <title>表格查閱器</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -77,7 +81,6 @@
 
         .checkbox-item:checked + label { background-color: var(--primary); color: white; border-color: var(--primary); }
         
-        /* 字體放大調整 */
         .content-row { display: flex; align-items: flex-start; padding: 0.7rem 0; font-size: 1.15rem; }
         .content-prefix { flex-shrink: 0; width: 90px; font-weight: 900; color: var(--primary); font-size: 0.95rem; padding-top: 0.2rem; margin-right: 0.75rem; opacity: 0.8; }
         .content-text { flex-grow: 1; color: #334155; line-height: 1.6; word-break: break-all; }
@@ -99,7 +102,7 @@
                 <div class="bg-white/20 p-1.5 rounded-lg flex-shrink-0">
                     <img src="https://raw.githubusercontent.com/Leonleedig/TABLEreader/main/icon.png" alt="icon" class="w-5 h-5 object-contain">
                 </div>
-                <h1 id="app-title" class="font-black tracking-tight text-lg truncate">表格查閱 PRO</h1>
+                <h1 id="app-title" class="font-black tracking-tight text-lg truncate">表格查閱器</h1>
             </div>
             <div class="flex items-center gap-2">
                 <button onclick="toggleDarkMode()" class="p-2 bg-white/10 rounded-full active:scale-95 transition-transform"><i id="theme-icon" data-lucide="moon" size="20"></i></button>
@@ -276,7 +279,11 @@
         document.getElementById('fileInput').addEventListener('change', e => {
             const f = e.target.files[0];
             if (!f) return;
+            
+            // 與檔案名稱連動：更新 App 標題與網頁分頁標題
             document.getElementById('app-title').innerText = f.name;
+            document.title = f.name + " - 表格查閱";
+
             const r = new FileReader();
             r.onload = ev => {
                 fullWorkbook = XLSX.read(new Uint8Array(ev.target.result), { type: 'array' });

@@ -1,41 +1,72 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
+    <!-- PWA 核心設定區 (請修改這裡) -->
+    <script>
+        const PWA_CONFIG = {
+            name: "資料盤點 PRO",
+            shortName: "資料盤點",
+            themeColor: "#4f46e5",
+            bgColor: "#f8fafc",
+            // 修正重點：必須使用圖片的「直連網址」(結尾通常是 .png/.jpg)
+            // 這裡幫你修正為 GitHub 的 Raw 連結格式，若連結失效請換回一般的圖片網址
+            iconUrl: "https://raw.githubusercontent.com/Leonleedig/TABLEreader/main/icon.png" 
+        };
+    </script>
+
     <!-- PWA 行動裝置核心標籤 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="資料盤點PRO">
-    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-title" content="資料盤點"> <!-- 修正：這裡通常用短名稱 -->
     
-    <title>資料盤點 PRO - 離線 PWA 版</title>
+    <!-- 動態設定 Theme Color (配合設定檔) -->
+    <script>
+        const metaTheme = document.createElement('meta');
+        metaTheme.name = 'theme-color';
+        metaTheme.content = PWA_CONFIG.themeColor;
+        document.head.appendChild(metaTheme);
+    </script>
+    
+    <title>資料盤點 PRO - 完美 PWA 版</title>
 
-    <!-- 1. 動態 PWA Manifest 配置 -->
+    <!-- 1. 動態 PWA Manifest (修正：加入 192x192 尺寸與正確連結) -->
     <link id="manifest-link" rel="manifest">
     <script>
         (function() {
-            const config = {
-                "name": "資料盤點 PRO 系統",
-                "short_name": "資料盤點",
+            const manifest = {
+                "name": PWA_CONFIG.name,
+                "short_name": PWA_CONFIG.shortName,
                 "start_url": ".",
                 "display": "standalone",
-                "background_color": "#f8fafc",
-                "theme_color": "#4f46e5",
+                "orientation": "portrait",
+                "background_color": PWA_CONFIG.bgColor,
+                "theme_color": PWA_CONFIG.themeColor,
                 "icons": [
                     {
-                        "src": "https://github.com/Leonleedig/TABLEreader/edit/main/icon.png",
+                        "src": PWA_CONFIG.iconUrl,
+                        "sizes": "192x192", 
+                        "type": "image/png",
+                        "purpose": "any maskable"
+                    },
+                    {
+                        "src": PWA_CONFIG.iconUrl,
                         "sizes": "512x512",
                         "type": "image/png",
                         "purpose": "any maskable"
                     }
                 ]
             };
-            const stringManifest = JSON.stringify(config);
-            const blob = new Blob([stringManifest], {type: 'application/json'});
+            const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
             document.querySelector('#manifest-link').setAttribute('href', URL.createObjectURL(blob));
+            
+            // 修正重點：iOS 需要獨立的 Apple Touch Icon 標籤
+            const appleIcon = document.createElement('link');
+            appleIcon.rel = 'apple-touch-icon';
+            appleIcon.href = PWA_CONFIG.iconUrl;
+            document.head.appendChild(appleIcon);
         })();
     </script>
     
@@ -70,7 +101,7 @@
         /* UI 元件樣式 */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         
-        /* 修正露出內文字的關鍵：將 padding 從外層移走 */
+        /* 卡片折疊動畫修正 */
         .details-wrapper { 
             display: grid; 
             grid-template-rows: 0fr; 
@@ -82,7 +113,6 @@
         .details-inner { 
             overflow: hidden; 
         }
-        /* 將實際的 Padding 放在內容容器內，確保外層 0fr 時它會被完全裁切 */
         .details-content {
             padding: 0.5rem 1.25rem 1.5rem 1.25rem;
             border-top: 1px solid #f8fafc;
@@ -193,7 +223,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             const swSource = `
-                const CACHE_NAME = 'inv-pro-pwa-v2';
+                const CACHE_NAME = 'inv-pro-pwa-v3';
                 const ASSETS = [
                     '/',
                     'https://cdn.tailwindcss.com',
@@ -211,9 +241,9 @@
                 });
             `;
             const blob = new Blob([swSource], {type: 'application/javascript'});
-            navigator.serviceWorker.register(URL.createObjectURL(blob)).then(() => {
-                console.log('PWA Service Worker Registered');
-            });
+            navigator.serviceWorker.register(URL.createObjectURL(blob))
+                .then(() => console.log('Service Worker Registered'))
+                .catch(err => console.error('SW Error:', err));
         }
     </script>
 

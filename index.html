@@ -4,21 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
+    <!-- PWA 基本配置 -->
     <script>
         const PWA_CONFIG = {
-            name: "表格查閱器",
+            name: "表格查閱",
             shortName: "閱表器",
             themeColor: "#428c3e", 
             bgColor: "#f8fafc",
             iconUrl: "https://raw.githubusercontent.com/Leonleedig/TABLEreader/main/icon.png" 
         };
+
+        // 動態生成 Web Manifest 以支援 PWA 安裝
+        const manifest = {
+            "name": PWA_CONFIG.name,
+            "short_name": PWA_CONFIG.shortName,
+            "start_url": ".",
+            "display": "standalone",
+            "background_color": PWA_CONFIG.bgColor,
+            "theme_color": PWA_CONFIG.themeColor,
+            "icons": [
+                {
+                    "src": PWA_CONFIG.iconUrl,
+                    "sizes": "512x512",
+                    "type": "image/png",
+                    "purpose": "any maskable"
+                }
+            ]
+        };
+        const stringManifest = JSON.stringify(manifest);
+        const blob = new Blob([stringManifest], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(blob);
+        const link = document.createElement('link');
+        link.rel = 'manifest';
+        link.href = manifestURL;
+        document.head.appendChild(link);
     </script>
 
+    <!-- iOS 專屬標籤與圖示修正 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="表格查閱">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Leonleedig/TABLEreader/main/icon.png">
     
-    <title>表格查閱 PRO</title>
+    <title>表格查閱</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -71,7 +99,7 @@
                 <div class="bg-white/20 p-1.5 rounded-lg flex-shrink-0">
                     <img src="https://raw.githubusercontent.com/Leonleedig/TABLEreader/main/icon.png" alt="icon" class="w-5 h-5 object-contain">
                 </div>
-                <h1 id="app-title" class="font-black tracking-tight text-lg truncate">表格查閱器，幫您指定顯示重點</h1>
+                <h1 id="app-title" class="font-black tracking-tight text-lg truncate">表格查閱 PRO</h1>
             </div>
             <div class="flex items-center gap-2">
                 <button onclick="toggleDarkMode()" class="p-2 bg-white/10 rounded-full active:scale-95 transition-transform"><i id="theme-icon" data-lucide="moon" size="20"></i></button>
@@ -132,7 +160,6 @@
                         <div class="bg-custom-green p-2 rounded-xl shrink-0"><i data-lucide="file-up" size="18" class="text-white"></i></div>
                         <div class="text-xs text-slate-500"><b class="text-slate-700 block">檔案導入：</b>點擊上傳 Excel 或 CSV 檔案。</div>
                     </div>
-                    <!-- 新增：存關鍵字說明 -->
                     <div class="flex items-center gap-4">
                         <div class="bg-white border-2 border-green-400 p-2 rounded-xl shrink-0"><i data-lucide="plus-circle" size="18" class="text-green-400"></i></div>
                         <div class="text-xs text-slate-500"><b class="text-slate-700 block">存關鍵字：</b>暫存關鍵字方便再次調用。</div>
@@ -157,7 +184,6 @@
         <div id="render-list" class="space-y-4 mt-4"></div>
     </main>
 
-    <!-- 設定抽屜 -->
     <div id="config-drawer" class="fixed inset-0 z-50 pointer-events-none transition-all duration-300 opacity-0">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleConfig()"></div>
         <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] p-6 transition-transform translate-y-full pointer-events-auto shadow-2xl max-h-[85vh] flex flex-col">

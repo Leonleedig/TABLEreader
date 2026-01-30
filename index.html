@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- PWA 核心設定區 (請修改這裡) -->
+    <!-- PWA 核心設定區 -->
     <script>
         const PWA_CONFIG = {
-            name: "資料盤點 PRO",
-            shortName: "資料盤點",
-            themeColor: "#4f46e5",
+            name: "表格查閱器", // 修改用語
+            shortName: "閱表器", // 修改用語
+            themeColor: "#428c3e", // 修改顏色：指定綠色
             bgColor: "#f8fafc",
-            // 修正重點：必須使用圖片的「直連網址」(結尾通常是 .png/.jpg)
-            // 這裡幫你修正為 GitHub 的 Raw 連結格式，若連結失效請換回一般的圖片網址
+            // App Icon 連結
             iconUrl: "https://raw.githubusercontent.com/Leonleedig/TABLEreader/main/icon.png" 
         };
     </script>
@@ -20,9 +19,9 @@
     <!-- PWA 行動裝置核心標籤 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="資料盤點">
+    <meta name="apple-mobile-web-app-title" content="表格查閱"> <!-- 修改用語 -->
     
-    <!-- 動態設定 Theme Color (配合設定檔) -->
+    <!-- 動態設定 Theme Color -->
     <script>
         const metaTheme = document.createElement('meta');
         metaTheme.name = 'theme-color';
@@ -30,9 +29,9 @@
         document.head.appendChild(metaTheme);
     </script>
     
-    <title>資料盤點 PRO - 完美 PWA 版</title>
+    <title>表格查閱器</title>
 
-    <!-- 1. 動態 PWA Manifest 與圖示設定 (包含電腦版 Favicon) -->
+    <!-- 1. 動態 PWA Manifest 與圖示設定 -->
     <link id="manifest-link" rel="manifest">
     <script>
         (function() {
@@ -63,13 +62,13 @@
             const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
             document.querySelector('#manifest-link').setAttribute('href', URL.createObjectURL(blob));
             
-            // 2. 設定 iOS 桌面圖示 (Apple Touch Icon)
+            // 2. 設定 iOS 桌面圖示
             const appleIcon = document.createElement('link');
             appleIcon.rel = 'apple-touch-icon';
             appleIcon.href = PWA_CONFIG.iconUrl;
             document.head.appendChild(appleIcon);
 
-            // 3. 設定電腦瀏覽器分頁圖示 (Favicon) - 修正處
+            // 3. 設定電腦瀏覽器分頁圖示
             const favicon = document.createElement('link');
             favicon.rel = 'icon';
             favicon.href = PWA_CONFIG.iconUrl;
@@ -85,6 +84,12 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
         
+        :root {
+            /* 定義主要的綠色變數 */
+            --primary: #428c3e;
+            --primary-dark: #357a32;
+        }
+
         body { 
             font-family: 'Noto Sans TC', sans-serif; 
             -webkit-tap-highlight-color: transparent; 
@@ -108,18 +113,13 @@
         /* UI 元件樣式 */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         
-        /* 卡片折疊動畫修正 */
         .details-wrapper { 
             display: grid; 
             grid-template-rows: 0fr; 
             transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1); 
         }
-        .details-open { 
-            grid-template-rows: 1fr; 
-        }
-        .details-inner { 
-            overflow: hidden; 
-        }
+        .details-open { grid-template-rows: 1fr; }
+        .details-inner { overflow: hidden; }
         .details-content {
             padding: 0.5rem 1.25rem 1.5rem 1.25rem;
             border-top: 1px solid #f8fafc;
@@ -133,28 +133,40 @@
             background-size: 1rem;
         }
 
+        /* Checkbox 樣式修改為綠色 */
         .checkbox-item:checked + label {
-            background-color: #4f46e5;
+            background-color: var(--primary);
             color: white;
-            border-color: #4f46e5;
+            border-color: var(--primary);
         }
 
         .content-row { display: flex; align-items: flex-start; padding-top: 0.5rem; padding-bottom: 0.5rem; font-size: 1.05rem; }
-        .content-prefix { flex-shrink: 0; width: 80px; font-weight: 900; color: #818cf8; font-size: 0.85rem; padding-top: 0.2rem; margin-right: 0.75rem; }
+        /* 前綴文字改為綠色系 (Tailwind green-400 近似色) */
+        .content-prefix { flex-shrink: 0; width: 80px; font-weight: 900; color: #74b86f; font-size: 0.85rem; padding-top: 0.2rem; margin-right: 0.75rem; }
         .content-text { flex-grow: 1; color: #334155; line-height: 1.6; word-break: break-all; }
         .content-divider { border: 0; border-top: 1px solid #f1f5f9; margin: 0; }
         .content-divider:last-child { display: none; }
 
         .safe-pb { padding-bottom: calc(1.5rem + env(safe-area-inset-bottom)); }
+        
+        /* 自定義背景色類別，確保使用精準的 #428c3e */
+        .bg-custom-green { background-color: var(--primary); }
+        .text-custom-green { color: var(--primary); }
+        .border-custom-green { border-color: var(--primary); }
+        .ring-custom-green { --tw-ring-color: var(--primary); }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
 
-    <header class="bg-indigo-600 text-white sticky top-0 z-40 shadow-lg no-invert pt-[env(safe-area-inset-top)]">
+    <!-- 頂部 Header：改用自定義綠色背景 -->
+    <header class="bg-custom-green text-white sticky top-0 z-40 shadow-lg no-invert pt-[env(safe-area-inset-top)]">
         <div class="px-4 py-3 flex justify-between items-center gap-4">
             <div class="flex items-center gap-2 min-w-0 flex-grow">
-                <i data-lucide="database" size="22"></i>
-                <h1 id="app-title" class="font-black tracking-tight text-lg truncate">資料盤點 PRO</h1>
+                <!-- 修改：使用與 App Icon 相同的圖片，取代原本的 Lucide icon -->
+                <div class="bg-white/20 p-1.5 rounded-lg flex-shrink-0">
+                    <img id="header-app-icon" src="" alt="icon" class="w-5 h-5 object-contain">
+                </div>
+                <h1 id="app-title" class="font-black tracking-tight text-lg truncate">表格查閱 PRO</h1>
             </div>
             <div class="flex items-center gap-2">
                 <button onclick="toggleDarkMode()" class="p-2 bg-white/10 rounded-full active:scale-95 transition-transform">
@@ -166,9 +178,10 @@
             </div>
         </div>
         
-        <div id="control-bar" class="px-4 pb-3 flex items-center gap-2 hidden bg-indigo-600 border-t border-indigo-500/30 pt-2">
+        <!-- 下方控制列：背景色調整 -->
+        <div id="control-bar" class="px-4 pb-3 flex items-center gap-2 hidden border-t border-white/20 pt-2" style="background-color: var(--primary);">
             <div class="flex items-center gap-2 flex-grow bg-white/20 rounded-lg px-3 py-1 border border-white/10">
-                <span class="text-indigo-100 text-xs font-bold whitespace-nowrap">工作表：</span>
+                <span class="text-white/90 text-xs font-bold whitespace-nowrap">工作表：</span>
                 <select id="sheet-dropdown" onchange="loadSheetData(this.value)" class="custom-select flex-grow bg-transparent text-white border-none pr-8 py-1.5 text-sm font-bold outline-none"></select>
             </div>
             <button onclick="toggleConfig()" class="p-2.5 bg-white/20 text-white rounded-lg border border-white/10 active:scale-95">
@@ -182,31 +195,36 @@
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleConfig()"></div>
         <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] p-6 transition-transform translate-y-full pointer-events-auto shadow-2xl max-h-[85vh] flex flex-col">
             <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6 shrink-0"></div>
-            <h2 class="text-xl font-black flex items-center gap-2 mb-6 shrink-0"><i data-lucide="sliders" class="text-indigo-600"></i> 欄位顯示對應</h2>
+            <!-- 圖示與文字顏色改為綠色系 -->
+            <h2 class="text-xl font-black flex items-center gap-2 mb-6 shrink-0"><i data-lucide="sliders" class="text-custom-green"></i> 欄位顯示對應</h2>
             <div class="overflow-y-auto pr-1 flex-grow space-y-6">
                 <div class="space-y-2">
                     <label class="text-xs font-black text-slate-400 uppercase tracking-widest">1. 標籤欄位 (單選)</label>
-                    <select id="field-tag" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 font-bold outline-none focus:border-indigo-500 transition-colors"></select>
+                    <!-- Focus 邊框改為綠色 -->
+                    <select id="field-tag" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 font-bold outline-none focus:border-custom-green transition-colors"></select>
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs font-black text-slate-400 uppercase tracking-widest">2. 項目欄位 (單選)</label>
-                    <select id="field-title" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 font-bold outline-none focus:border-indigo-500 transition-colors"></select>
+                    <select id="field-title" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 font-bold outline-none focus:border-custom-green transition-colors"></select>
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs font-black text-slate-400 uppercase tracking-widest">3. 內容詳情 (複選)</label>
                     <div id="content-selection-group" class="grid grid-cols-2 gap-2"></div>
                 </div>
             </div>
-            <button onclick="applyNewMapping()" class="w-full mt-6 py-4 bg-indigo-600 text-white rounded-2xl font-black text-lg shadow-lg active:scale-95 shrink-0">確認套用</button>
+            <!-- 按鈕背景改為綠色 -->
+            <button onclick="applyNewMapping()" class="w-full mt-6 py-4 bg-custom-green text-white rounded-2xl font-black text-lg shadow-lg active:scale-95 shrink-0">確認套用</button>
         </div>
     </div>
 
     <main class="px-3 pt-3 pb-32">
         <div class="sticky top-[115px] z-30 bg-slate-50/95 backdrop-blur-md pb-2 space-y-3">
             <div class="relative group">
+                <!-- Focus Ring 改為綠色 -->
                 <input type="text" id="searchInput" oninput="render()" onkeydown="handleSearchKey(event)" placeholder="搜尋關鍵字..." 
-                       class="w-full px-5 py-3 rounded-2xl border-none shadow-sm focus:ring-2 focus:ring-indigo-500 bg-white text-base">
-                <button onclick="saveKeyword()" class="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-indigo-400 hover:text-indigo-600 transition-colors">
+                       class="w-full px-5 py-3 rounded-2xl border-none shadow-sm focus:ring-2 focus:ring-custom-green bg-white text-base">
+                <!-- 按鈕文字 hover 改為綠色 -->
+                <button onclick="saveKeyword()" class="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-green-400 hover:text-custom-green transition-colors">
                     <i data-lucide="plus-circle" size="20"></i>
                 </button>
             </div>
@@ -216,9 +234,11 @@
             <div id="dynamic-filters" class="flex gap-1.5 overflow-x-auto no-scrollbar py-1"></div>
             <div class="flex items-center justify-between mt-2">
                 <div class="text-[12px] font-bold text-slate-500 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm flex items-center gap-1.5">
-                    <i data-lucide="layers" size="14" class="text-indigo-500"></i> 符合 <span id="stat-count" class="text-indigo-600 font-black mx-0.5">0</span> 筆
+                    <!-- 圖示與文字改為綠色 -->
+                    <i data-lucide="layers" size="14" class="text-green-500"></i> 符合 <span id="stat-count" class="text-custom-green font-black mx-0.5">0</span> 筆
                 </div>
-                <button onclick="toggleAllExpand()" id="expandAllBtn" class="text-[12px] font-black text-indigo-700 bg-indigo-50 px-4 py-1.5 rounded-full border border-indigo-100">全部展開</button>
+                <!-- 按鈕樣式改為綠色系 -->
+                <button onclick="toggleAllExpand()" id="expandAllBtn" class="text-[12px] font-black text-custom-green bg-green-50 px-4 py-1.5 rounded-full border border-green-100">全部展開</button>
             </div>
         </div>
         <div id="render-list" class="space-y-4 mt-4"></div>
@@ -226,11 +246,11 @@
 
     <input type="file" id="fileInput" accept=".xlsx, .xls, .csv" class="hidden">
 
-    <!-- 2. 強化版 Service Worker (支持離線快取外部庫) -->
+    <!-- 2. 強化版 Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
             const swSource = `
-                const CACHE_NAME = 'inv-pro-pwa-v3';
+                const CACHE_NAME = 'table-reader-pro-v4';
                 const ASSETS = [
                     '/',
                     'https://cdn.tailwindcss.com',
@@ -259,6 +279,9 @@
         let selectedTagIndex = 0, selectedTitleIndex = 1, selectedContentIndices = [];
         let selectedCategories = new Set(), expandedItems = new Set();
         let savedKeywords = JSON.parse(localStorage.getItem('explorer_saved_keywords') || '[]');
+
+        // 初始化：設定 Header 圖示
+        document.getElementById('header-app-icon').src = PWA_CONFIG.iconUrl;
 
         function toggleDarkMode() {
             const isDark = document.documentElement.classList.toggle('dark-mode');
@@ -308,8 +331,9 @@
             const list = document.getElementById('pocket-list');
             if (savedKeywords.length === 0) { container.classList.add('hidden'); return; }
             container.classList.remove('hidden');
+            // 修改：口袋關鍵字的 hover 顏色與圖示改為綠色系
             list.innerHTML = savedKeywords.map(word => `
-                <div onclick="applyPocketSearch('${word}')" class="flex items-center bg-white border border-slate-200 rounded-full pl-3 pr-1 py-1 text-xs font-bold text-slate-600 shadow-sm active:scale-95 group no-invert cursor-pointer">
+                <div onclick="applyPocketSearch('${word}')" class="flex items-center bg-white border border-slate-200 rounded-full pl-3 pr-1 py-1 text-xs font-bold text-slate-600 shadow-sm active:scale-95 group no-invert cursor-pointer hover:border-custom-green hover:text-custom-green">
                     <span class="mr-1">${word}</span>
                     <button onclick="deleteKeyword(event, '${word}')" class="p-1 hover:bg-slate-100 rounded-full text-slate-300 hover:text-red-500 transition-colors">
                         <i data-lucide="x" size="12"></i>
@@ -345,7 +369,7 @@
             document.getElementById('content-selection-group').innerHTML = headers.map((h, i) => `
                 <div class="relative">
                     <input type="checkbox" id="chk-${i}" value="${i}" class="checkbox-item hidden" checked onchange="handleContentSelect(this)">
-                    <label for="chk-${i}" class="flex items-center justify-center p-3 rounded-xl border-2 border-slate-100 text-xs font-bold cursor-pointer transition-all truncate">${h}</label>
+                    <label for="chk-${i}" class="flex items-center justify-center p-3 rounded-xl border-2 border-slate-100 text-xs font-bold cursor-pointer transition-all truncate hover:border-green-300">${h}</label>
                 </div>
             `).join('');
             selectedContentIndices = headers.map((_, i) => i);
@@ -388,10 +412,11 @@
                 const c = r[selectedTagIndex]?.toString().trim();
                 if(c) catStats[c] = (catStats[c] || 0) + 1;
             });
+            // 修改：分類標籤顏色改為綠色系
             document.getElementById('dynamic-filters').innerHTML = Object.keys(catStats).sort().map(c => `
                 <button onclick="selectedCategories.has('${c}') ? selectedCategories.delete('${c}') : selectedCategories.add('${c}');render()" 
                         class="flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-black border transition-all ${
-                    selectedCategories.has(c) ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-white text-slate-500 border-slate-200'
+                    selectedCategories.has(c) ? 'bg-custom-green text-white border-custom-green shadow-md' : 'bg-white text-slate-500 border-slate-200'
                 }">${c} <span class="ml-1 opacity-60">${catStats[c]}</span></button>
             `).join('');
 
@@ -413,8 +438,10 @@
 
                 return `
                     <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden transition-all">
-                        <div onclick="expandedItems.has('${rid}') ? expandedItems.delete('${rid}') : expandedItems.add('${rid}');render()" class="p-5 flex gap-4 items-center cursor-pointer active:bg-slate-50">
-                            <div class="flex-shrink-0"><span class="text-[10px] font-black text-indigo-500 bg-indigo-50 px-2 py-1 rounded-md border border-indigo-100 uppercase">${r[selectedTagIndex] || '一般'}</span></div>
+                        <!-- 修改：列表項目的 hover 背景色 -->
+                        <div onclick="expandedItems.has('${rid}') ? expandedItems.delete('${rid}') : expandedItems.add('${rid}');render()" class="p-5 flex gap-4 items-center cursor-pointer active:bg-green-50/50">
+                            <!-- 修改：Tag 標籤顏色改為綠色系 -->
+                            <div class="flex-shrink-0"><span class="text-[10px] font-black text-custom-green bg-green-50 px-2 py-1 rounded-md border border-green-100 uppercase">${r[selectedTagIndex] || '一般'}</span></div>
                             <div class="flex-grow min-w-0"><h3 class="font-black text-slate-800 text-lg truncate">${r[selectedTitleIndex] || '未命名'}</h3></div>
                             <i data-lucide="chevron-down" size="20" class="text-slate-300 transition-transform ${open ? 'rotate-180' : ''}"></i>
                         </div>

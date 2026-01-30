@@ -6,8 +6,8 @@
     
     <script>
         const PWA_CONFIG = {
-            name: "表格查閱",
-            shortName: "表格查閱",
+            name: "表格查閱器",
+            shortName: "閱表器",
             themeColor: "#428c3e", 
             bgColor: "#f8fafc",
             iconUrl: "https://raw.githubusercontent.com/Leonleedig/TABLEreader/main/icon.png" 
@@ -49,23 +49,18 @@
 
         .checkbox-item:checked + label { background-color: var(--primary); color: white; border-color: var(--primary); }
         
-        .content-row { display: flex; align-items: flex-start; padding: 0.6rem 0; font-size: 1.05rem; }
-        .content-prefix { flex-shrink: 0; width: 80px; font-weight: 900; color: var(--primary); font-size: 0.85rem; padding-top: 0.2rem; margin-right: 0.75rem; opacity: 0.8; }
+        /* 字體放大調整 */
+        .content-row { display: flex; align-items: flex-start; padding: 0.7rem 0; font-size: 1.15rem; }
+        .content-prefix { flex-shrink: 0; width: 90px; font-weight: 900; color: var(--primary); font-size: 0.95rem; padding-top: 0.2rem; margin-right: 0.75rem; opacity: 0.8; }
         .content-text { flex-grow: 1; color: #334155; line-height: 1.6; word-break: break-all; }
         .content-divider { border: 0; border-top: 1px solid #f1f5f9; margin: 0; }
         .content-divider:last-child { display: none; }
 
         .stat-badge { background-color: white; padding: 0.4rem 0.8rem; border-radius: 9999px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .tag-badge { background-color: var(--primary-light); color: var(--primary); font-weight: 900; font-size: 10px; padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--primary-border); text-transform: uppercase; }
-
-        .table-demo { border-collapse: separate; border-spacing: 3px; }
-        .table-demo td { width: 16px; height: 9px; border-radius: 2px; }
-        .cell-head { background-color: var(--primary); opacity: 0.8; }
-        .cell-data { background-color: #e2e8f0; }
+        .tag-badge { background-color: var(--primary-light); color: var(--primary); font-weight: 900; font-size: 11px; padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--primary-border); text-transform: uppercase; }
 
         .bg-custom-green { background-color: var(--primary); }
         .text-custom-green { color: var(--primary); }
-        .border-custom-green { border-color: var(--primary); }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
@@ -76,7 +71,7 @@
                 <div class="bg-white/20 p-1.5 rounded-lg flex-shrink-0">
                     <img src="https://raw.githubusercontent.com/Leonleedig/TABLEreader/main/icon.png" alt="icon" class="w-5 h-5 object-contain">
                 </div>
-                <h1 id="app-title" class="font-black tracking-tight text-lg truncate">表格查閱 PRO</h1>
+                <h1 id="app-title" class="font-black tracking-tight text-lg truncate">表格查閱器，幫您指定顯示重點</h1>
             </div>
             <div class="flex items-center gap-2">
                 <button onclick="toggleDarkMode()" class="p-2 bg-white/10 rounded-full active:scale-95 transition-transform"><i id="theme-icon" data-lucide="moon" size="20"></i></button>
@@ -88,7 +83,6 @@
             <div class="flex gap-2">
                 <div class="flex items-center gap-2 flex-grow bg-white/20 rounded-lg px-3 py-1 border border-white/10">
                     <span class="text-white/90 text-xs font-bold whitespace-nowrap">分頁：</span>
-                    <!-- 修正：加入 id 以便 JS 控制 -->
                     <select id="sheet-dropdown" onchange="loadSheetData(this.value)" class="custom-select flex-grow bg-transparent text-white border-none pr-8 py-1.5 text-sm font-bold outline-none"></select>
                 </div>
                 <button id="sort-btn" onclick="cycleSort()" class="p-2.5 bg-white/20 text-white rounded-lg border border-white/10 active:scale-95">
@@ -105,7 +99,7 @@
                 <input type="text" id="searchInput" oninput="render()" placeholder="搜尋表格內容..." 
                        class="w-full px-5 py-3 rounded-2xl border-none shadow-sm focus:ring-2 focus:ring-custom-green bg-white text-base">
                 <button onclick="saveKeyword()" class="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-green-400">
-                    <i data-lucide="plus-circle" size="20"></i>
+                    <i data-lucide="plus-circle" size="24"></i>
                 </button>
             </div>
             <div id="keyword-pocket" class="hidden flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
@@ -138,6 +132,11 @@
                         <div class="bg-custom-green p-2 rounded-xl shrink-0"><i data-lucide="file-up" size="18" class="text-white"></i></div>
                         <div class="text-xs text-slate-500"><b class="text-slate-700 block">檔案導入：</b>點擊上傳 Excel 或 CSV 檔案。</div>
                     </div>
+                    <!-- 新增：存關鍵字說明 -->
+                    <div class="flex items-center gap-4">
+                        <div class="bg-white border-2 border-green-400 p-2 rounded-xl shrink-0"><i data-lucide="plus-circle" size="18" class="text-green-400"></i></div>
+                        <div class="text-xs text-slate-500"><b class="text-slate-700 block">存關鍵字：</b>暫存關鍵字方便再次調用。</div>
+                    </div>
                     <div class="flex items-center gap-4">
                         <div class="bg-slate-100 p-2 rounded-xl shrink-0"><i data-lucide="arrow-down-narrow-wide" size="18" class="text-slate-500"></i></div>
                         <div class="text-xs text-slate-500"><b class="text-slate-700 block">內容排序：</b>依項目名稱切換升序或降序排列。</div>
@@ -146,42 +145,19 @@
                         <div class="bg-slate-100 p-2 rounded-xl shrink-0"><i data-lucide="settings-2" size="18" class="text-slate-500"></i></div>
                         <div class="text-xs text-slate-500"><b class="text-slate-700 block">查閱設定：</b>設定要作為標題或標籤的欄位。</div>
                     </div>
-                    <div class="flex items-center gap-4">
-                        <div class="bg-green-50 p-2 rounded-xl border border-green-100 shrink-0"><i data-lucide="chevron-down" size="18" class="text-custom-green"></i></div>
-                        <div class="text-xs text-slate-500"><b class="text-slate-700 block">展開收合：</b>一次顯示或隱藏所有項目的詳細資料。</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="w-full max-w-sm bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
-                <div class="flex items-center gap-3 mb-4 text-green-600">
-                    <i data-lucide="check-circle-2" size="20"></i>
-                    <span class="font-black text-sm uppercase tracking-wider">適用表格形式</span>
-                </div>
-                <div class="flex gap-4 items-start">
-                    <table class="table-demo shrink-0 mt-1">
-                        <tr><td class="cell-head"></td><td class="cell-head"></td><td class="cell-head"></td></tr>
-                        <tr><td class="cell-data"></td><td class="cell-data"></td><td class="cell-data"></td></tr>
-                        <tr><td class="cell-data"></td><td class="cell-data"></td><td class="cell-data"></td></tr>
-                    </table>
-                    <p class="text-xs text-slate-500 leading-relaxed font-bold">
-                        適用首行為綱、橫向分列之表格。<br>
-                        <span class="text-red-400">× 不適用跳行或合併儲存格。</span>
-                    </p>
                 </div>
             </div>
 
             <button id="close-guide-btn" onclick="toggleGuide(false)" class="w-full max-w-sm py-4 bg-custom-green text-white rounded-3xl font-black shadow-lg active:scale-95 transition-transform flex flex-col items-center gap-1 hidden">
                 <span class="text-lg">回到資料列表</span>
-                <span class="text-[10px] font-medium opacity-80 flex items-center gap-1">
-                    <i data-lucide="mouse-pointer-2" size="10"></i> 隨時點擊左上角圖示可再見此說明
-                </span>
+                <span class="text-[10px] font-medium opacity-80 flex items-center gap-1"><i data-lucide="mouse-pointer-2" size="10"></i> 隨時點擊左上角圖示可再見此說明</span>
             </button>
         </div>
 
         <div id="render-list" class="space-y-4 mt-4"></div>
     </main>
 
+    <!-- 設定抽屜 -->
     <div id="config-drawer" class="fixed inset-0 z-50 pointer-events-none transition-all duration-300 opacity-0">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleConfig()"></div>
         <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] p-6 transition-transform translate-y-full pointer-events-auto shadow-2xl max-h-[85vh] flex flex-col">
@@ -190,12 +166,12 @@
             <div class="overflow-y-auto pr-1 flex-grow space-y-6">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-2">
-                        <label class="text-xs font-black text-slate-400 uppercase tracking-widest">標籤欄位 (分類)</label>
-                        <select id="field-tag" class="w-full p-3 bg-slate-50 rounded-xl border border-slate-100 font-bold outline-none focus:border-custom-green text-sm"></select>
+                        <label class="text-xs font-black text-slate-400 uppercase tracking-widest">標籤欄位</label>
+                        <select id="field-tag" class="w-full p-3 bg-slate-50 rounded-xl border border-slate-100 font-bold outline-none text-sm"></select>
                     </div>
                     <div class="space-y-2">
-                        <label class="text-xs font-black text-slate-400 uppercase tracking-widest">項目欄位 (主旨)</label>
-                        <select id="field-title" class="w-full p-3 bg-slate-50 rounded-xl border border-slate-100 font-bold outline-none focus:border-custom-green text-sm"></select>
+                        <label class="text-xs font-black text-slate-400 uppercase tracking-widest">項目欄位</label>
+                        <select id="field-title" class="w-full p-3 bg-slate-50 rounded-xl border border-slate-100 font-bold outline-none text-sm"></select>
                     </div>
                 </div>
                 <div class="space-y-3">
@@ -223,13 +199,11 @@
             icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
             lucide.createIcons();
         }
-        if (localStorage.getItem('dark-mode') === 'on') document.documentElement.classList.add('dark-mode');
 
         function toggleGuide(show) {
             const guide = document.getElementById('empty-state-guide');
             const closeBtn = document.getElementById('close-guide-btn');
             const renderList = document.getElementById('render-list');
-
             if (show) {
                 guide.classList.remove('hidden');
                 if (rawData.length > 0) closeBtn.classList.remove('hidden');
@@ -246,15 +220,6 @@
             d.classList.toggle('opacity-0', isOpen);
             d.classList.toggle('pointer-events-none', isOpen);
             d.querySelector('.absolute.bottom-0').classList.toggle('translate-y-full', isOpen);
-        }
-
-        function cycleSort() {
-            sortMode = (sortMode + 1) % 3;
-            const icon = document.getElementById('sort-icon');
-            const modes = ['arrow-down-narrow-wide', 'sort-asc', 'sort-desc'];
-            icon.setAttribute('data-lucide', modes[sortMode]);
-            lucide.createIcons();
-            render();
         }
 
         function saveKeyword() {
@@ -274,7 +239,7 @@
             if (savedKeywords.length === 0) { container.classList.add('hidden'); return; }
             container.classList.remove('hidden');
             list.innerHTML = savedKeywords.map(word => `
-                <div onclick="document.getElementById('searchInput').value='${word}';render()" class="flex items-center bg-white border border-slate-200 rounded-full pl-3 pr-1 py-1 text-xs font-bold text-slate-600 shadow-sm active:scale-95 cursor-pointer hover:border-custom-green hover:text-custom-green no-invert">
+                <div onclick="document.getElementById('searchInput').value='${word}';render()" class="flex items-center bg-white border border-slate-200 rounded-full pl-3 pr-1 py-1 text-xs font-bold text-slate-600 shadow-sm active:scale-95 cursor-pointer no-invert">
                     <span class="mr-1">${word}</span>
                     <i data-lucide="x" size="12" class="text-slate-300 ml-1" onclick="event.stopPropagation();savedKeywords=savedKeywords.filter(w=>w!=='${word}');localStorage.setItem('explorer_saved_keywords', JSON.stringify(savedKeywords));updatePocketUI()"></i>
                 </div>
@@ -293,7 +258,6 @@
                 document.getElementById('empty-state-guide').classList.add('hidden');
                 document.getElementById('stat-row').classList.remove('hidden');
                 
-                // 檔案導入時，先初始化下拉選單的所有選項
                 const dropdown = document.getElementById('sheet-dropdown');
                 dropdown.innerHTML = fullWorkbook.SheetNames.map(sn => `<option value="${sn}">${sn}</option>`).join('');
                 
@@ -307,7 +271,6 @@
             const rows = XLSX.utils.sheet_to_json(s, { header: 1, defval: "" });
             if (rows.length < 1) return;
 
-            // 修正點：確保下拉選單顯示目前選取的名稱
             const dropdown = document.getElementById('sheet-dropdown');
             dropdown.value = name;
 
@@ -320,7 +283,7 @@
             document.getElementById('content-selection-group').innerHTML = headers.map((h, i) => `
                 <div class="relative w-full">
                     <input type="checkbox" id="chk-${i}" value="${i}" class="checkbox-item hidden" checked onchange="handleContentSelect(this)">
-                    <label for="chk-${i}" class="flex items-center justify-center py-4 px-6 rounded-2xl border-2 border-slate-50 text-base font-black cursor-pointer transition-all truncate hover:border-green-300">
+                    <label for="chk-${i}" class="flex items-center justify-center py-4 px-6 rounded-2xl border-2 border-slate-50 text-base font-black cursor-pointer transition-all truncate">
                         ${h}
                     </label>
                 </div>
@@ -352,12 +315,20 @@
                 expandedItems.clear(); 
                 text.innerText = "全部展開";
                 icon.setAttribute('data-lucide', 'chevron-down');
-            } 
-            else { 
+            } else { 
                 rawData.forEach((_, i) => expandedItems.add(`row-${i}`)); 
                 text.innerText = "全部收合"; 
                 icon.setAttribute('data-lucide', 'chevron-up');
             }
+            lucide.createIcons();
+            render();
+        }
+
+        function cycleSort() {
+            sortMode = (sortMode + 1) % 3;
+            const icon = document.getElementById('sort-icon');
+            const modes = ['arrow-down-narrow-wide', 'sort-asc', 'sort-desc'];
+            icon.setAttribute('data-lucide', modes[sortMode]);
             lucide.createIcons();
             render();
         }
@@ -415,7 +386,11 @@
             lucide.createIcons();
         }
 
-        window.onload = () => { lucide.createIcons(); updatePocketUI(); };
+        window.onload = () => { 
+            if (localStorage.getItem('dark-mode') === 'on') document.documentElement.classList.add('dark-mode');
+            lucide.createIcons(); 
+            updatePocketUI(); 
+        };
     </script>
 </body>
 </html>

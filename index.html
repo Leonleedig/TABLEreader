@@ -20,7 +20,7 @@
     <!-- PWA 行動裝置核心標籤 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="資料盤點"> <!-- 修正：這裡通常用短名稱 -->
+    <meta name="apple-mobile-web-app-title" content="資料盤點">
     
     <!-- 動態設定 Theme Color (配合設定檔) -->
     <script>
@@ -32,10 +32,11 @@
     
     <title>資料盤點 PRO - 完美 PWA 版</title>
 
-    <!-- 1. 動態 PWA Manifest (修正：加入 192x192 尺寸與正確連結) -->
+    <!-- 1. 動態 PWA Manifest 與圖示設定 (包含電腦版 Favicon) -->
     <link id="manifest-link" rel="manifest">
     <script>
         (function() {
+            // 1. 設定 PWA Manifest
             const manifest = {
                 "name": PWA_CONFIG.name,
                 "short_name": PWA_CONFIG.shortName,
@@ -62,11 +63,17 @@
             const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
             document.querySelector('#manifest-link').setAttribute('href', URL.createObjectURL(blob));
             
-            // 修正重點：iOS 需要獨立的 Apple Touch Icon 標籤
+            // 2. 設定 iOS 桌面圖示 (Apple Touch Icon)
             const appleIcon = document.createElement('link');
             appleIcon.rel = 'apple-touch-icon';
             appleIcon.href = PWA_CONFIG.iconUrl;
             document.head.appendChild(appleIcon);
+
+            // 3. 設定電腦瀏覽器分頁圖示 (Favicon) - 修正處
+            const favicon = document.createElement('link');
+            favicon.rel = 'icon';
+            favicon.href = PWA_CONFIG.iconUrl;
+            document.head.appendChild(favicon);
         })();
     </script>
     
